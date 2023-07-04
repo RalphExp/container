@@ -7,39 +7,16 @@ import (
 	"github.com/ralphexp/container"
 )
 
-type TestType struct {
-	v int
-}
+type HeapValue int
 
-func (tt TestType) CompareTo(other interface{}) bool {
-	return tt.v < (other.(TestType)).v
-}
-
-func TestSequence(t *testing.T) {
-	h := container.NewHeap()
-	for i := 100; i > 0; i-- {
-		h.Push(i)
-	}
-
-	a := make([]int, 0)
-	for {
-		if h.Len() == 0 {
-			break
-		}
-		a = append(a, h.Pop().(int))
-	}
-
-	for i := 0; i < 100; i++ {
-		if a[i] != i+1 {
-			t.Errorf("heap error: expected %d but got %d\n", i+1, a[i])
-		}
-	}
+func (tt HeapValue) Less(other interface{}) bool {
+	return tt < (other.(HeapValue))
 }
 
 func TestRandomInsert(t *testing.T) {
-	a := make([]interface{}, 0)
-	for i := 100; i > 0; i-- {
-		a = append(a, i)
+	a := make([]container.Comparable, 0)
+	for i := 0; i < 1000; i++ {
+		a = append(a, HeapValue(i))
 	}
 
 	rand.Shuffle(len(a), func(i, j int) {
@@ -49,7 +26,7 @@ func TestRandomInsert(t *testing.T) {
 	t.Logf("shuffled: %v\n", a)
 	h := container.NewHeap()
 	h.Init(a)
-	a = []interface{}{} // clear a
+	a = []container.Comparable{} // clear a
 
 	for {
 		if h.Len() == 0 {
@@ -58,42 +35,32 @@ func TestRandomInsert(t *testing.T) {
 		a = append(a, h.Pop())
 	}
 
-	for i := 0; i < 100; i++ {
-		if a[i].(int) != i+1 {
-			t.Errorf("heap error: expected %d but got %d\n", i+1, a[i])
+	for i := 0; i < 1000; i++ {
+		if a[i].(HeapValue) != HeapValue(i) {
+			t.Errorf("heap error: expected %d but got %d\n", i, a[i])
 		}
 	}
 }
 
-func TestUserDefinedType(t *testing.T) {
-	a := make([]int, 0)
-	for i := 100; i > 0; i-- {
-		a = append(a, i)
-	}
-
-	rand.Shuffle(len(a), func(i, j int) {
-		a[i], a[j] = a[j], a[i]
-	})
-
-	u := make([]interface{}, 0)
+func TestFix(t *testing.T) {
+	a := make([]container.Comparable, 0)
 	for i := 0; i < 100; i++ {
-		u = append(u, TestType{v: a[i]})
+		a = append(a, HeapValue(i))
 	}
 
 	h := container.NewHeap()
-	h.Init(u)
-	u = []interface{}{} // clear u
-
-	for {
-		if h.Len() == 0 {
-			break
-		}
-		u = append(u, h.Pop())
+	h.Init(a)
+	for i := 0; i < 10; i++ {
+		h.GetSlice()[i*10] = HeapValue(i * 10)
+		h.Fix(i * 10)
 	}
 
+	j := container.Comparable(HeapValue(-1))
 	for i := 0; i < 100; i++ {
-		if (u[i].(TestType)).v != i+1 {
-			t.Errorf("heap error: expected %d but got %v\n", i+1, u[i])
+		k := h.Pop()
+		if k.Less(j) {
+			t.Errorf("heap error: j = %d, k = %d\n", j, k)
 		}
+		j = k
 	}
 }

@@ -1,23 +1,16 @@
 // heap.go use the builtin container/heap's algorithm
-// but make it more object-orient and easier to use(I hope),
-// user should implement their comparable interface to
-// utilize Heap
+// but make it more object-orient and easier to use,
+// user only need to implement the comparable interface to
+// utilize the Heap struct
 
 package container
 
 type Heap struct {
-	heap       []any
-	comparable Comparable
+	heap []Comparable
 }
 
 func NewHeap() *Heap {
-	return &Heap{
-		heap:       make([]any, 0),
-		comparable: nil}
-}
-
-func (h *Heap) SetComparable(c Comparable) {
-	h.comparable = c
+	return &Heap{heap: make([]Comparable, 0)}
 }
 
 func (h *Heap) Len() int {
@@ -28,7 +21,7 @@ func (h *Heap) Len() int {
 // Init is idempotent with respect to the heap invariants
 // and may be called whenever the heap invariants may have been invalidated.
 // The complexity is O(n) where n = h.Len().
-func (h *Heap) Init(values []any) {
+func (h *Heap) Init(values []Comparable) {
 	// heapify
 	h.heap = values
 	n := h.Len()
@@ -39,7 +32,7 @@ func (h *Heap) Init(values []any) {
 
 // Push pushes the element x onto the heap.
 // The complexity is O(log n) where n = h.Len().
-func (h *Heap) Push(x interface{}) {
+func (h *Heap) Push(x Comparable) {
 	h.heap = append(h.heap, x)
 	h.up(h.Len() - 1)
 }
@@ -47,7 +40,7 @@ func (h *Heap) Push(x interface{}) {
 // Pop removes and returns the minimum element (according to Less) from the heap.
 // The complexity is O(log n) where n = h.Len().
 // Pop is equivalent to Remove(h, 0).
-func (h *Heap) Pop() any {
+func (h *Heap) Pop() Comparable {
 	if h.Len() == 0 {
 		return nil
 	}
@@ -86,15 +79,13 @@ func (h *Heap) Remove(i int) any {
 	return h.Pop()
 }
 
+// Get the underlying slice
+func (h *Heap) GetSlice() []Comparable {
+	return h.heap
+}
+
 func (h Heap) less(i, j int) bool {
-	switch h.heap[0].(type) {
-	case int:
-		return h.heap[i].(int) < h.heap[j].(int)
-	case float64:
-		return h.heap[i].(float64) < h.heap[j].(float64)
-	default:
-		return h.heap[i].(Comparable).CompareTo(h.heap[j])
-	}
+	return h.heap[i].Less(h.heap[j])
 }
 
 func (h *Heap) up(j int) {
@@ -107,6 +98,7 @@ func (h *Heap) up(j int) {
 		j = i
 	}
 }
+
 func (h *Heap) down(i0, n int) bool {
 	i := i0
 	for {
