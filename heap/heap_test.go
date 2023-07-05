@@ -1,4 +1,4 @@
-package container
+package heap
 
 import (
 	"math/rand"
@@ -7,24 +7,23 @@ import (
 	"github.com/ralphexp/container"
 )
 
-type HeapValue int
+type Value int
 
-func (tt HeapValue) Less(other interface{}) bool {
-	return tt < (other.(HeapValue))
+func (v Value) Less(other interface{}) bool {
+	return v < (other.(Value))
 }
 
 func TestRandomInsert(t *testing.T) {
 	a := make([]container.Comparable, 0)
 	for i := 0; i < 1000; i++ {
-		a = append(a, HeapValue(i))
+		a = append(a, Value(i))
 	}
 
 	rand.Shuffle(len(a), func(i, j int) {
 		a[i], a[j] = a[j], a[i]
 	})
 
-	t.Logf("shuffled: %v\n", a)
-	h := container.NewHeap()
+	h := NewHeap()
 	h.Init(a)
 	a = []container.Comparable{} // clear a
 
@@ -36,7 +35,7 @@ func TestRandomInsert(t *testing.T) {
 	}
 
 	for i := 0; i < 1000; i++ {
-		if a[i].(HeapValue) != HeapValue(i) {
+		if a[i].(Value) != Value(i) {
 			t.Errorf("heap error: expected %d but got %d\n", i, a[i])
 		}
 	}
@@ -45,17 +44,17 @@ func TestRandomInsert(t *testing.T) {
 func TestFix(t *testing.T) {
 	a := make([]container.Comparable, 0)
 	for i := 0; i < 100; i++ {
-		a = append(a, HeapValue(i))
+		a = append(a, Value(i))
 	}
 
-	h := container.NewHeap()
+	h := NewHeap()
 	h.Init(a)
 	for i := 0; i < 10; i++ {
-		h.GetSlice()[i*10] = HeapValue(i * 10)
+		h.GetSlice()[i*10] = Value(i * 10)
 		h.Fix(i * 10)
 	}
 
-	j := container.Comparable(HeapValue(-1))
+	j := container.Comparable(Value(-1))
 	for i := 0; i < 100; i++ {
 		k := h.Pop()
 		if k.Less(j) {

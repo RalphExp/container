@@ -3,14 +3,18 @@
 // user only need to implement the comparable interface to
 // utilize the Heap struct
 
-package container
+package heap
+
+import (
+	c "github.com/ralphexp/container"
+)
 
 type Heap struct {
-	heap []Comparable
+	heap []c.Comparable
 }
 
 func NewHeap() *Heap {
-	return &Heap{heap: make([]Comparable, 0)}
+	return &Heap{heap: make([]c.Comparable, 0)}
 }
 
 func (h *Heap) Len() int {
@@ -21,7 +25,7 @@ func (h *Heap) Len() int {
 // Init is idempotent with respect to the heap invariants
 // and may be called whenever the heap invariants may have been invalidated.
 // The complexity is O(n) where n = h.Len().
-func (h *Heap) Init(values []Comparable) {
+func (h *Heap) Init(values []c.Comparable) {
 	// heapify
 	h.heap = values
 	n := h.Len()
@@ -32,7 +36,7 @@ func (h *Heap) Init(values []Comparable) {
 
 // Push pushes the element x onto the heap.
 // The complexity is O(log n) where n = h.Len().
-func (h *Heap) Push(x Comparable) {
+func (h *Heap) Push(x c.Comparable) {
 	h.heap = append(h.heap, x)
 	h.up(h.Len() - 1)
 }
@@ -40,7 +44,7 @@ func (h *Heap) Push(x Comparable) {
 // Pop removes and returns the minimum element (according to Less) from the heap.
 // The complexity is O(log n) where n = h.Len().
 // Pop is equivalent to Remove(h, 0).
-func (h *Heap) Pop() Comparable {
+func (h *Heap) Pop() c.Comparable {
 	if h.Len() == 0 {
 		return nil
 	}
@@ -80,7 +84,7 @@ func (h *Heap) Remove(i int) any {
 }
 
 // Get the underlying slice
-func (h *Heap) GetSlice() []Comparable {
+func (h *Heap) GetSlice() []c.Comparable {
 	return h.heap
 }
 
