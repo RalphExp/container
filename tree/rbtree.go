@@ -181,11 +181,7 @@ func (tree *RBTree) deleteNode(z *RBNode) {
 
 // ITA ch13.4
 func (tree *RBTree) deleteFixup(x *RBNode) {
-	// x must not be tree.nil
-	if x == tree.null {
-		panic("RBTree panic: data corrupted")
-	}
-
+	// x can be tree.nil!!!
 	for x != tree.root && x.color == black {
 		if x == x.parent.left {
 			w := x.parent.right

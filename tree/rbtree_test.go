@@ -64,14 +64,44 @@ func TestFind0(t *testing.T) {
 	}
 }
 
-func TestDelete0(t *testing.T) {
+func TestFind1(t *testing.T) {
 	tree := NewRBTree()
-	for i := 1; i <= 1; i++ {
+	for i := 1; i <= 100; i++ {
 		tree.Insert(Value(i), i)
 	}
 
-	for i := 1; i <= 1; i++ {
+	// test not found
+	n := tree.Find(Value(101))
+	assert.Equal(t, n, (*RBNode)(nil))
+}
+
+func TestDelete0(t *testing.T) {
+	tree := NewRBTree()
+	for i := 1; i <= 100; i++ {
+		tree.Insert(Value(i), i)
+	}
+
+	for i := 1; i <= 100; i++ {
 		tree.Delete(Value(i))
 	}
 	assert.Equal(t, tree.Len(), 0)
+}
+
+func TestDelete1(t *testing.T) {
+	tree := NewRBTree()
+	for i := 1; i <= 100; i++ {
+		tree.Insert(Value(i), i)
+	}
+
+	for i := 51; i <= 100; i++ {
+		tree.Delete(Value(i))
+	}
+	assert.Equal(t, tree.Len(), 50)
+
+	n := tree.Min()
+	for i := 1; i <= 50; i++ {
+		assert.Equal(t, n.Key, Value(i))
+		assert.Equal(t, n.Value, i)
+		n = tree.Next(n)
+	}
 }
