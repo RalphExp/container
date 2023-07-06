@@ -239,6 +239,7 @@ func (tree *RBTree) deleteFixup(x *RBNode) {
 			}
 		}
 	}
+	x.color = black
 }
 
 // Find return a Red-Black Tree node pointer or nil
@@ -377,6 +378,7 @@ func (tree *RBTree) Dump() {
 		return
 	}
 	tree.dumpNode(tree.root)
+	fmt.Printf("\n")
 }
 
 func (tree *RBTree) dumpNode(n *RBNode) {
